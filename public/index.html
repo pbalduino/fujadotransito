@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/javascripts/test.js" type="text/javascript"></script>
+<script src="http://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+<style type="text/css">
+  html { height: 100% }
+  body { height: 100%; margin: 0 auto; padding: 0; background: #f0f0ff; font-family: tahoma, ubuntu, arial, sans-serif;}
+  #wrapper {background: #fff; padding: 20px; margin 0 auto; width: 800px;}
+  #map_form {margin: 0 auto; width: 800px;}
+  #map_canvas { height: 500px; width: 800px; margin: 0 auto; background: #ccc; }
+  label {float: left; width: 100px;}
+</style>
+<script type="text/javascript">
+  function initialize() {
+
+    var latlng = new google.maps.LatLng(-23.5821, -46.66668000000001);
+    var myOptions = {
+      zoom: 15,
+      center: latlng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      sensor: false
+    };
+    var map = new google.maps.Map(document.getElementById("map_canvas"),
+        myOptions);
+
+    var geocoder = new google.maps.Geocoder();
+
+    var startMarker = new google.maps.Marker({
+      position: latlng,
+      title:"We are here"
+    });
+
+    var endMarker = new google.maps.Marker({
+      position: new google.maps.LatLng(-23.61022, -46.69477000000001),
+      title:"We are going here"
+    });
+
+    startMarker.setMap(map);
+    endMarker.setMap(map);
+
+    var steps = [];
+    for(var i = 0; i < myPath.routes[0].legs[0].steps.length; i++){
+      var step = myPath.routes[0].legs[0].steps[i];
+      console.log(step, step.start_location, step.end_location);
+      steps.push(new google.maps.LatLng(step.start_location.lat, step.start_location.lng));
+      steps.push(new google.maps.LatLng(step.end_location.lat, step.end_location.lng));
+    }
+
+
+
+
+    var enderecos = [];
+    enderecos.push('R. Feliciano Maia, 50, Sao Paulo');
+    enderecos.push('R. Afonso Ferreira, 50, Sao Paulo');
+    enderecos.push('R. Brasilia, 50, Sao Paulo');
+    enderecos.push('R. Taja, 50, Sao Paulo');
+
+    for (var i=0; i < enderecos.length; i++) {
+        geocoder.geocode( { 'address': enderecos[i]}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                var point = new google.maps.Marker({
+                    map: map,
+                    position: results[0].geometry.location,
+                    title: '#Win?'
+                });
+            }
+        });
+    }
+
+    console.log(steps);
+
+    var path = new google.maps.Polyline({
+      path: steps,
+      strokeColor: "#FF0000",
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    console.log(map);
+
+    path.setMap(map);
+
+    var trafficLayer = new google.maps.TrafficLayer();
+    trafficLayer.setMap(map);
+  }
+
+</script>
+</head>
+<body onload="initialize()">
+<div id="wrapper">
+<div id="map_form">
+<form>
+<label for="from">Estou em:</label><input type="text" id="from" size="60"><br/>
+<label for="to">Vou para:</label><input type="text" id="to" size="60"><br />
+<input type="submit" value="Mostrar o caminho">
+</form>
+</div>
+  <div id="map_canvas"></div>
+</div>
+</body>
+</html>
+
